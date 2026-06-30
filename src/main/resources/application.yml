@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/ecommerce_db
-    username: postgres
-    password: postgres
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/ecommerce_db}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 2
@@ -31,5 +31,5 @@ server:
   port: 8080
 
 jwt:
-  secret: ecommerce_jwt_secret_key_super_segura_minimo_256_bits_123456789
-  expiration: 86400000
+  secret: ${JWT_SECRET:ecommerce_jwt_secret_key_super_segura_minimo_256_bits_123456789}
+  expiration: ${JWT_EXPIRATION:86400000}
