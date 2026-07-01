@@ -37,24 +37,28 @@ API REST completa para e-commerce desenvolvida com Java 21 e Spring Boot 3.3.5, 
 
 A aplicação segue uma arquitetura em camadas (Layered Architecture) com separação clara de responsabilidades:
 
+```text
 src/main/java/com/jeffry/ecommerce/
-├── config/          # Configurações de segurança e filtros JWT
-├── controller/      # Endpoints REST
-├── service/         # Regras de negócio
-├── repository/      # Acesso ao banco de dados
-├── entity/          # Entidades JPA
-├── dto/             # Objetos de transferência de dados
-└── exception/       # Tratamento global de erros
+├── config/       # Configurações de segurança e filtros JWT
+├── controller/   # Endpoints REST
+├── service/      # Regras de negócio
+├── repository/   # Acesso ao banco de dados
+├── entity/       # Entidades JPA
+├── dto/          # Objetos de transferência de dados
+└── exception/    # Tratamento global de erros
+```
 
 ### Modelo de Dados
 
-users ──────────────────────────────────────────┐
-│                                             │
-├──< cart_items >── products ──< categories   │
-│                                             │
-└──< orders >──< order_items >── products     │
-│
-users <─────────────────────────────────────────┘
+```text
+users ──────────────────────────────────────┐
+  │                                         │
+  ├──< cart_items >── products ──< categories
+  │                                         │
+  └──< orders >──< order_items >── products │
+                                            │
+users <─────────────────────────────────────┘
+```
 
 ---
 
@@ -123,11 +127,13 @@ A API ficará disponível em `http://localhost:8080`
 ### Opção 2 — Local (sem Docker)
 
 1. Crie o banco de dados PostgreSQL:
+
 ```sql
 CREATE DATABASE ecommerce_db;
 ```
 
 2. Configure as variáveis de ambiente ou edite `src/main/resources/application.yml`:
+
 ```yaml
 spring:
   datasource:
@@ -137,6 +143,7 @@ spring:
 ```
 
 3. Gere o JAR e execute:
+
 ```bash
 ./gradlew bootJar
 java -jar build/libs/ecommerce-api-0.0.1-SNAPSHOT.jar
@@ -154,6 +161,7 @@ java -jar build/libs/ecommerce-api-0.0.1-SNAPSHOT.jar
 | POST | `/auth/login` | Pública | Autenticar e obter token JWT |
 
 **Exemplo de cadastro:**
+
 ```json
 POST /auth/register
 {
@@ -164,6 +172,7 @@ POST /auth/register
 ```
 
 **Resposta:**
+
 ```json
 {
   "token": "eyJhbGciOiJIUzM4NCJ9...",
@@ -200,6 +209,7 @@ POST /auth/register
 | DELETE | `/products/{id}` | ADMIN | Remover produto |
 
 **Exemplo de criação de produto:**
+
 ```json
 POST /products
 Authorization: Bearer {token}
@@ -225,6 +235,7 @@ Authorization: Bearer {token}
 | DELETE | `/cart` | USER | Limpar o carrinho |
 
 **Exemplo de adição ao carrinho:**
+
 ```json
 POST /cart/items
 Authorization: Bearer {token}
@@ -235,6 +246,7 @@ Authorization: Bearer {token}
 ```
 
 **Resposta:**
+
 ```json
 {
   "items": [
@@ -261,6 +273,7 @@ Authorization: Bearer {token}
 | PATCH | `/orders/{id}/status` | ADMIN | Atualizar status do pedido |
 
 **Exemplo de atualização de status:**
+
 ```json
 PATCH /orders/1/status
 Authorization: Bearer {token}
@@ -275,9 +288,11 @@ Authorization: Bearer {token}
 
 Os pedidos seguem um ciclo de vida com transições de status controladas:
 
+```text
 PENDING ──► CONFIRMED ──► SHIPPED ──► DELIVERED
-│              │
-└──────────────┴──► CANCELLED
+   │              │
+   └──────────────┴──► CANCELLED
+```
 
 | Transição | Permitida |
 |-----------|-----------|
@@ -295,6 +310,7 @@ PENDING ──► CONFIRMED ──► SHIPPED ──► DELIVERED
 
 ## 📁 Estrutura do Projeto
 
+```text
 ecommerce-api/
 ├── src/
 │   └── main/

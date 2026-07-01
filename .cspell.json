@@ -1,0 +1,41 @@
+{
+  "version": "0.2",
+  "language": "en,pt-BR",
+  "dictionaries": ["pt-BR"],
+  "dictionaryDefinitions": [
+    {
+      "name": "pt-BR",
+      "path": "https://raw.githubusercontent.com/streetsidesoftware/cspell-dicts/main/dictionaries/pt-BR/dict/pt-BR.txt",
+      "type": "S"
+    }
+  ],
+  "words": [
+    "ecommerce",
+    "jeffry",
+    "Jeffry",
+    "jjwt",
+    "JJWT",
+    "hikari",
+    "flyway",
+    "lombok",
+    "temurin",
+    "alpine",
+    "stockqty",
+    "unitprice",
+    "orderitem",
+    "cartitem",
+    "snakeyaml",
+    "daoaprovider",
+    "PENDING",
+    "CONFIRMED",
+    "SHIPPED",
+    "DELIVERED",
+    "CANCELLED"
+  ],
+  "ignorePaths": [
+    "build/**",
+    ".gradle/**",
+    "gradle/**",
+    "*.jar"
+  ]
+}
