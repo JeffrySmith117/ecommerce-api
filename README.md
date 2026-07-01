@@ -373,8 +373,8 @@ ecommerce-api/
 ├── build.gradle
 └── gradle.properties
 
-## 👨‍💻 Autor
+👨‍💻 Autor
 
-**Jeffry Smith**
+Jeffry Smith
 
 [![GitHub](https://img.shields.io/badge/GitHub-JeffrySmith117-black?style=flat&logo=github)](https://github.com/JeffrySmith117)
