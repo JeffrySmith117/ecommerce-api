@@ -8,9 +8,9 @@ import com.jeffry.ecommerce.exception.ResourceNotFoundException;
 import com.jeffry.ecommerce.repository.CategoryRepository;
 import com.jeffry.ecommerce.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -25,11 +25,9 @@ public class ProductService {
         return toResponse(productRepository.save(product));
     }
 
-    public List<ProductResponse> findAll() {
-        return productRepository.findAll()
-                .stream()
-                .map(this::toResponse)
-                .toList();
+    public Page<ProductResponse> findAll(Pageable pageable) {
+        return productRepository.findAll(pageable)
+                .map(this::toResponse);
     }
 
     public ProductResponse findById(Long id) {
@@ -38,18 +36,14 @@ public class ProductService {
                 .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado"));
     }
 
-    public List<ProductResponse> findByCategory(Long categoryId) {
-        return productRepository.findByCategoryId(categoryId)
-                .stream()
-                .map(this::toResponse)
-                .toList();
+    public Page<ProductResponse> findByCategory(Long categoryId, Pageable pageable) {
+        return productRepository.findByCategoryId(categoryId, pageable)
+                .map(this::toResponse);
     }
 
-    public List<ProductResponse> search(String name) {
-        return productRepository.findByNameContainingIgnoreCase(name)
-                .stream()
-                .map(this::toResponse)
-                .toList();
+    public Page<ProductResponse> search(String name, Pageable pageable) {
+        return productRepository.findByNameContainingIgnoreCase(name, pageable)
+                .map(this::toResponse);
     }
 
     public ProductResponse update(Long id, ProductRequest request) {
