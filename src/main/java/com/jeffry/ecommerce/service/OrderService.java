@@ -10,6 +10,8 @@ import com.jeffry.ecommerce.repository.OrderRepository;
 import com.jeffry.ecommerce.repository.ProductRepository;
 import com.jeffry.ecommerce.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -86,12 +88,10 @@ public class OrderService {
         return toResponse(order);
     }
 
-    public List<OrderResponse> findByUser(String userEmail) {
+    public Page<OrderResponse> findByUser(String userEmail, Pageable pageable) {
         User user = getUser(userEmail);
-        return orderRepository.findByUserIdOrderByCreatedAtDesc(user.getId())
-                .stream()
-                .map(this::toResponse)
-                .toList();
+        return orderRepository.findByUserIdOrderByCreatedAtDesc(user.getId(), pageable)
+                .map(this::toResponse);
     }
 
     public OrderResponse findById(Long id, String userEmail, boolean isAdmin) {
