@@ -1,7 +1,10 @@
 package com.jeffry.ecommerce.exception;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -13,6 +16,8 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<Map<String, Object>> handleNotFound(ResourceNotFoundException ex) {
@@ -37,9 +42,21 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<Map<String, Object>> handleRuntime(RuntimeException ex) {
-        return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<Map<String, Object>> handleAuthentication(AuthenticationException ex) {
+        // Mensagem genérica de propósito: não revela se o e-mail existe ou não.
+        return buildResponse(HttpStatus.UNAUTHORIZED, "Email ou senha inválidos");
+    }
+
+    /**
+     * Último recurso para qualquer exceção não mapeada (bugs, falhas de infraestrutura, etc.).
+     * O detalhe real vai para o log do servidor; o cliente recebe só uma mensagem genérica,
+     * para não expor stack traces ou detalhes internos da aplicação.
+     */
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Map<String, Object>> handleUnexpected(Exception ex) {
+        log.error("Erro não tratado ao processar requisição", ex);
+        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro interno. Tente novamente mais tarde.");
     }
 
     private ResponseEntity<Map<String, Object>> buildResponse(HttpStatus status, String message) {
