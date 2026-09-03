@@ -11,6 +11,7 @@ import com.jeffry.ecommerce.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -83,7 +84,13 @@ class CartServiceTest {
 
         cartService.addItem("maria@email.com", request);
 
-        verify(cartItemRepository, times(1)).save(any(CartItem.class));
+        ArgumentCaptor<CartItem> captor = ArgumentCaptor.forClass(CartItem.class);
+        verify(cartItemRepository, times(1)).save(captor.capture());
+
+        CartItem saved = captor.getValue();
+        assertThat(saved.getUser()).isEqualTo(user);
+        assertThat(saved.getProduct()).isEqualTo(product);
+        assertThat(saved.getQuantity()).isEqualTo(2);
     }
 
     @Test
