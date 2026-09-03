@@ -3,6 +3,8 @@ package com.jeffry.ecommerce.service;
 import com.jeffry.ecommerce.dto.CategoryRequest;
 import com.jeffry.ecommerce.dto.CategoryResponse;
 import com.jeffry.ecommerce.entity.Category;
+import com.jeffry.ecommerce.exception.BusinessException;
+import com.jeffry.ecommerce.exception.ResourceNotFoundException;
 import com.jeffry.ecommerce.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,7 +19,7 @@ public class CategoryService {
 
     public CategoryResponse create(CategoryRequest request) {
         if (categoryRepository.findByName(request.getName()).isPresent()) {
-            throw new RuntimeException("Categoria já existe");
+            throw new BusinessException("Categoria já existe");
         }
         Category category = Category.builder()
                 .name(request.getName())
@@ -36,19 +38,19 @@ public class CategoryService {
     public CategoryResponse findById(Long id) {
         return categoryRepository.findById(id)
                 .map(this::toResponse)
-                .orElseThrow(() -> new RuntimeException("Categoria não encontrada"));
+                .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada"));
     }
 
     public CategoryResponse update(Long id, CategoryRequest request) {
         Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Categoria não encontrada"));
+                .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada"));
         category.setName(request.getName());
         return toResponse(categoryRepository.save(category));
     }
 
     public void delete(Long id) {
         if (!categoryRepository.existsById(id)) {
-            throw new RuntimeException("Categoria não encontrada");
+            throw new ResourceNotFoundException("Categoria não encontrada");
         }
         categoryRepository.deleteById(id);
     }
