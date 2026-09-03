@@ -4,6 +4,7 @@ import com.jeffry.ecommerce.dto.ProductRequest;
 import com.jeffry.ecommerce.dto.ProductResponse;
 import com.jeffry.ecommerce.entity.Category;
 import com.jeffry.ecommerce.entity.Product;
+import com.jeffry.ecommerce.exception.ResourceNotFoundException;
 import com.jeffry.ecommerce.repository.CategoryRepository;
 import com.jeffry.ecommerce.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +35,7 @@ public class ProductService {
     public ProductResponse findById(Long id) {
         return productRepository.findById(id)
                 .map(this::toResponse)
-                .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado"));
     }
 
     public List<ProductResponse> findByCategory(Long categoryId) {
@@ -53,13 +54,13 @@ public class ProductService {
 
     public ProductResponse update(Long id, ProductRequest request) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado"));
         return toResponse(productRepository.save(buildProduct(product, request)));
     }
 
     public void delete(Long id) {
         if (!productRepository.existsById(id)) {
-            throw new RuntimeException("Produto não encontrado");
+            throw new ResourceNotFoundException("Produto não encontrado");
         }
         productRepository.deleteById(id);
     }
@@ -71,7 +72,7 @@ public class ProductService {
         product.setStockQty(request.getStockQty());
         if (request.getCategoryId() != null) {
             Category category = categoryRepository.findById(request.getCategoryId())
-                    .orElseThrow(() -> new RuntimeException("Categoria não encontrada"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada"));
             product.setCategory(category);
         }
         return product;
