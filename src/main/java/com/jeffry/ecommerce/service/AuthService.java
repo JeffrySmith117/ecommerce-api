@@ -4,6 +4,8 @@ import com.jeffry.ecommerce.dto.AuthResponse;
 import com.jeffry.ecommerce.dto.LoginRequest;
 import com.jeffry.ecommerce.dto.RegisterRequest;
 import com.jeffry.ecommerce.entity.User;
+import com.jeffry.ecommerce.exception.BusinessException;
+import com.jeffry.ecommerce.exception.ResourceNotFoundException;
 import com.jeffry.ecommerce.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,7 +27,7 @@ public class AuthService {
 
     public AuthResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email já cadastrado");
+            throw new BusinessException("Email já cadastrado");
         }
 
         User user = User.builder()
@@ -54,7 +56,7 @@ public class AuthService {
         );
 
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
         String token = jwtService.generateToken(userDetails);
