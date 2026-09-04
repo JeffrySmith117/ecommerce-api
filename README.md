@@ -1,12 +1,28 @@
 # 🛒 Ecommerce API
 
-API REST completa para e-commerce desenvolvida com Java 21 e Spring Boot 3.3.5, com autenticação JWT, controle de acesso por roles, catálogo de produtos, carrinho de compras e gestão de pedidos com workflow de status. A aplicação é containerizada com Docker e pronta para deploy em nuvem.
+Aplicação full-stack de e-commerce: backend REST em Java 21 e Spring Boot 3.3.5, com autenticação JWT, controle de acesso por roles, catálogo de produtos, carrinho de compras e gestão de pedidos com workflow de status — e um front-end em React + TypeScript que consome essa API. A aplicação é containerizada com Docker e está publicada em produção (links abaixo).
+
+---
+
+## 🔗 Demo ao vivo
+
+| | |
+|---|---|
+| 🖥️ Front-end | [ecommerce-frontend-lime-gamma-55.vercel.app](https://ecommerce-frontend-lime-gamma-55.vercel.app) |
+| ⚙️ API (backend) | [ecommerce-api-o3qg.onrender.com](https://ecommerce-api-o3qg.onrender.com) |
+| 📖 Documentação interativa (Swagger) | [ecommerce-api-o3qg.onrender.com/swagger-ui/index.html](https://ecommerce-api-o3qg.onrender.com/swagger-ui/index.html) |
+
+> ⚠️ O backend está hospedado no plano gratuito do Render, que "dorme" após 15 minutos de inatividade — a primeira requisição depois disso pode levar até ~1 minuto para responder enquanto o serviço acorda. As próximas são instantâneas.
+
+Para testar, basta criar uma conta pela própria tela de cadastro do front-end — o catálogo já vem populado com produtos e categorias de demonstração.
 
 ---
 
 ## 📋 Índice
 
+- [Demo ao vivo](#-demo-ao-vivo)
 - [Tecnologias](#-tecnologias)
+- [Front-end](#-front-end)
 - [Arquitetura](#-arquitetura)
 - [Funcionalidades](#-funcionalidades)
 - [Pré-requisitos](#-pré-requisitos)
@@ -27,9 +43,19 @@ API REST completa para e-commerce desenvolvida com Java 21 e Spring Boot 3.3.5, 
 | Banco de Dados | PostgreSQL 16 |
 | ORM | Hibernate / Spring Data JPA |
 | Migrations | Flyway |
+| Documentação da API | springdoc-openapi / Swagger UI |
 | Build | Gradle 9.5 |
 | Containerização | Docker + Docker Compose |
-| Deploy | AWS EC2 + RDS (planejado) |
+| Front-end | React 19 + TypeScript + Vite |
+| Deploy | Render (backend) · Neon (PostgreSQL) · Vercel (front-end) |
+
+---
+
+## 💻 Front-end
+
+O front-end fica na pasta [`ecommerce-frontend/`](./ecommerce-frontend) deste mesmo repositório — React + TypeScript + Vite, consumindo a API acima via Axios. Cobre cadastro/login, catálogo com busca, filtro por categoria e paginação, carrinho de compras e histórico de pedidos.
+
+Detalhes de stack e como rodar localmente estão no [README do front-end](./ecommerce-frontend/README.md).
 
 ---
 
@@ -39,7 +65,7 @@ A aplicação segue uma arquitetura em camadas (Layered Architecture) com separa
 
 ```text
 src/main/java/com/jeffry/ecommerce/
-├── config/       # Configurações de segurança e filtros JWT
+├── config/       # Configurações de segurança, filtros JWT e OpenAPI
 ├── controller/   # Endpoints REST
 ├── service/      # Regras de negócio
 ├── repository/   # Acesso ao banco de dados
@@ -71,8 +97,9 @@ users <────────────────────────�
 - Filtro JWT em todas as requisições autenticadas
 
 ### Catálogo
-- Listagem pública de produtos (sem autenticação)
-- Busca por nome e filtragem por categoria
+- Listagem paginada e pública de produtos (sem autenticação)
+- Busca por nome e filtragem por categoria (também paginadas)
+- Imagem de demonstração por produto
 - CRUD completo de produtos e categorias (restrito a ADMIN)
 
 ### Carrinho de Compras
@@ -88,7 +115,10 @@ users <────────────────────────�
 - Limpeza automática do carrinho após criação do pedido
 - Workflow de status com transições válidas
 - Devolução automática de estoque ao cancelar pedido
-- Histórico de pedidos por usuário
+- Histórico paginado de pedidos por usuário
+
+### Documentação
+- Documentação interativa da API via Swagger UI (`/swagger-ui/index.html`)
 
 ### Tratamento de Erros
 - Respostas padronizadas em JSON para todos os erros
@@ -106,6 +136,8 @@ Para rodar localmente sem Docker:
 
 Para rodar com Docker:
 - Docker Desktop
+
+Para rodar o front-end: Node.js 20+ (veja o [README do front-end](./ecommerce-frontend/README.md)).
 
 ---
 
@@ -152,6 +184,8 @@ java -jar build/libs/ecommerce-api-0.0.1-SNAPSHOT.jar
 ---
 
 ## 🔌 Endpoints
+
+> A lista completa e interativa de endpoints está sempre disponível via [Swagger UI](https://ecommerce-api-o3qg.onrender.com/swagger-ui/index.html).
 
 ### Autenticação — `/auth`
 
@@ -200,9 +234,9 @@ POST /auth/register
 
 | Método | Endpoint | Autenticação | Descrição |
 |--------|----------|-------------|-----------|
-| GET | `/products` | Pública | Listar todos os produtos |
-| GET | `/products?search=nome` | Pública | Buscar produtos por nome |
-| GET | `/products?categoryId=1` | Pública | Filtrar por categoria |
+| GET | `/products` | Pública | Listar produtos (paginado) |
+| GET | `/products?search=nome` | Pública | Buscar produtos por nome (paginado) |
+| GET | `/products?categoryId=1` | Pública | Filtrar por categoria (paginado) |
 | GET | `/products/{id}` | Pública | Buscar produto por ID |
 | POST | `/products` | ADMIN | Criar produto |
 | PUT | `/products/{id}` | ADMIN | Atualizar produto |
@@ -218,6 +252,7 @@ Authorization: Bearer {token}
   "description": "Notebook com processador Intel Core i7",
   "price": 3499.99,
   "stockQty": 10,
+  "imageUrl": "https://exemplo.com/imagem.jpg",
   "categoryId": 1
 }
 ```
@@ -268,7 +303,7 @@ Authorization: Bearer {token}
 | Método | Endpoint | Autenticação | Descrição |
 |--------|----------|-------------|-----------|
 | POST | `/orders` | USER | Criar pedido a partir do carrinho |
-| GET | `/orders` | USER | Listar pedidos do usuário |
+| GET | `/orders` | USER | Listar pedidos do usuário (paginado) |
 | GET | `/orders/{id}` | USER/ADMIN | Buscar pedido por ID |
 | PATCH | `/orders/{id}/status` | ADMIN | Atualizar status do pedido |
 
@@ -312,12 +347,14 @@ PENDING ──► CONFIRMED ──► SHIPPED ──► DELIVERED
 
 ```text
 ecommerce-api/
+├── ecommerce-frontend/    # Front-end React + TypeScript (Vite)
 ├── src/
 │   └── main/
 │       ├── java/com/jeffry/ecommerce/
 │       │   ├── config/
 │       │   │   ├── JwtAuthFilter.java
 │       │   │   ├── SecurityConfig.java
+│       │   │   ├── OpenApiConfig.java
 │       │   │   └── UserDetailsServiceImpl.java
 │       │   ├── controller/
 │       │   │   ├── AuthController.java
@@ -367,13 +404,16 @@ ecommerce-api/
 │       └── resources/
 │           ├── application.yml
 │           └── db/migration/
-│               └── V1__create_tables.sql
+│               ├── V1__create_tables.sql
+│               ├── V2__seed_demo_data.sql
+│               └── V3__add_product_image_url.sql
 ├── Dockerfile
 ├── docker-compose.yml
 ├── build.gradle
 └── gradle.properties
+```
 
-👨‍💻 Autor
+## 👨‍💻 Jeffry Desen. full stack
 
 Jeffry Smith
 
