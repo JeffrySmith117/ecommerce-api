@@ -98,6 +98,9 @@ export function ProductsPage() {
         <div className="product-grid">
           {products.map((product) => (
             <div className="product-card" key={product.id}>
+              {product.imageUrl && (
+                <img className="product-image" src={product.imageUrl} alt={product.name} />
+              )}
               <h3>{product.name}</h3>
               {product.category && <span className="product-category">{product.category.name}</span>}
               {product.description && <p className="product-description">{product.description}</p>}
