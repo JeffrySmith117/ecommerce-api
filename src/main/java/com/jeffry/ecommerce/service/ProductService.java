@@ -64,6 +64,7 @@ public class ProductService {
         product.setDescription(request.getDescription());
         product.setPrice(request.getPrice());
         product.setStockQty(request.getStockQty());
+        product.setImageUrl(request.getImageUrl());
         if (request.getCategoryId() != null) {
             Category category = categoryRepository.findById(request.getCategoryId())
                     .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada"));
@@ -79,6 +80,7 @@ public class ProductService {
                 .description(product.getDescription())
                 .price(product.getPrice())
                 .stockQty(product.getStockQty())
+                .imageUrl(product.getImageUrl())
                 .category(product.getCategory() != null
                         ? categoryService.toResponse(product.getCategory())
                         : null)
