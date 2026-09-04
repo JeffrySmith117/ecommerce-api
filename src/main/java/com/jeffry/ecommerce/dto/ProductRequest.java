@@ -24,5 +24,7 @@ public class ProductRequest {
     @Min(value = 0, message = "Estoque não pode ser negativo")
     private Integer stockQty;
 
+    private String imageUrl;
+
     private Long categoryId;
 }

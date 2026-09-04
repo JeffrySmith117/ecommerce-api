@@ -30,8 +30,11 @@ public class Product {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
 
-    @Column(name = "stock_qty", nullable = false)
+        @Column(name = "stock_qty", nullable = false)
     private Integer stockQty;
+
+    @Column(name = "image_url", length = 500)
+    private String imageUrl;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
